@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Make a Zine with Dirty Little Zine</title>
+<style>
+  :root{
+    --bg:#0a0a0a; --fg:#ffffff; --muted:#a0a0a0;
+    --card:#1a1a1a; --border:#2a2a2a; --accent:#F43F5E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:var(--bg);color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    overflow:hidden;}
+  .deck{position:relative;width:100vw;height:100vh;}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;
+    align-items:center;justify-content:center;padding:60px;
+    text-align:center;opacity:0;transition:opacity .4s ease;}
+  .slide.active{display:flex;opacity:1;}
+  .inner{width:100%;max-width:960px;}
+  .kicker{color:var(--accent);font-weight:700;letter-spacing:.18em;
+    text-transform:uppercase;font-size:16px;margin-bottom:22px;}
+  h1{font-size:64px;font-weight:800;line-height:1.05;margin-bottom:20px;}
+  h2{font-size:46px;font-weight:800;line-height:1.1;margin-bottom:14px;}
+  .sub{font-size:26px;color:var(--muted);line-height:1.4;max-width:760px;margin:0 auto;}
+  .accent{color:var(--accent);}
+
+  /* Card grid */
+  .grid{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin-top:40px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;
+    padding:28px 24px;flex:1;min-width:200px;max-width:250px;}
+  .card .ico{font-size:44px;margin-bottom:14px;}
+  .card h3{font-size:22px;margin-bottom:8px;}
+  .card p{font-size:16px;color:var(--muted);line-height:1.4;}
+
+  /* Step flow */
+  .flow{display:flex;align-items:stretch;justify-content:center;gap:12px;
+    margin-top:44px;flex-wrap:wrap;}
+  .step{background:var(--card);border:1px solid var(--border);border-radius:16px;
+    padding:24px 18px;width:200px;text-align:left;}
+  .step .num{display:inline-flex;align-items:center;justify-content:center;
+    width:40px;height:40px;border-radius:50%;background:var(--accent);
+    color:#fff;font-weight:800;font-size:20px;margin-bottom:14px;}
+  .step h3{font-size:19px;margin-bottom:6px;}
+  .step p{font-size:15px;color:var(--muted);line-height:1.4;}
+  .arrow{align-self:center;color:var(--accent);font-size:30px;font-weight:800;}
+
+  /* Stat */
+  .stat{font-size:120px;font-weight:800;color:var(--accent);line-height:1;margin:20px 0;}
+  .stat-label{font-size:24px;color:var(--muted);}
+
+  /* Icon list */
+  .ilist{list-style:none;margin:38px auto 0;max-width:640px;text-align:left;}
+  .ilist li{display:flex;align-items:center;gap:20px;background:var(--card);
+    border:1px solid var(--border);border-radius:14px;padding:18px 24px;margin-bottom:14px;}
+  .ilist .li-ico{font-size:32px;flex-shrink:0;width:40px;text-align:center;}
+  .ilist .li-txt{font-size:21px;}
+  .ilist .li-txt small{display:block;color:var(--muted);font-size:16px;margin-top:3px;}
+
+  /* Comparison */
+  .cmp{display:flex;gap:0;align-items:stretch;justify-content:center;margin-top:40px;}
+  .cmp .col{background:var(--card);border:1px solid var(--border);border-radius:16px;
+    padding:32px 28px;width:340px;text-align:left;}
+  .cmp .vs{display:flex;align-items:center;justify-content:center;
+    font-weight:800;color:var(--accent);font-size:26px;width:70px;}
+  .cmp h3{font-size:22px;margin-bottom:16px;}
+  .cmp ul{list-style:none;}
+  .cmp li{font-size:18px;color:var(--muted);margin-bottom:12px;padding-left:24px;position:relative;}
+  .cmp li:before{content:"—";position:absolute;left:0;color:var(--accent);}
+
+  /* Fold diagram grid */
+  .panels{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+    max-width:640px;margin:40px auto 0;}
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:10px;
+    aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;
+    font-size:15px;color:var(--muted);position:relative;}
+  .panel.cover{border-color:var(--accent);color:var(--fg);}
+  .panel .pn{position:absolute;top:6px;left:8px;font-size:12px;color:var(--accent);font-weight:700;}
+
+  /* Quote */
+  .quote{font-size:34px;font-style:italic;line-height:1.4;max-width:780px;margin:20px auto;}
+  .quote:before{content:"\201C";color:var(--accent);font-size:70px;display:block;line-height:.5;margin-bottom:20px;}
+  .attr{font-size:20px;color:var(--muted);margin-top:20px;}
+
+  /* nav */
+  .counter{position:fixed;bottom:24px;right:28px;color:var(--muted);
+    font-size:16px;letter-spacing:.1em;z-index:10;}
+  .hint{position:fixed;bottom:24px;left:28px;color:#555;font-size:14px;z-index:10;}
+  .progress{position:fixed;top:0;left:0;height:4px;background:var(--accent);
+    transition:width .4s ease;z-index:10;}
+  .tag{display:inline-block;background:rgba(244,63,94,.12);color:var(--accent);
+    border:1px solid rgba(244,63,94,.4);border-radius:999px;
+    padding:8px 18px;font-size:16px;font-weight:600;margin-top:28px;}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 Title -->
+  <section class="slide active">
+    <div class="inner">
+      <div class="kicker">A DIY Tutorial</div>
+      <h1>Make a Zine in Your<br>Browser <span class="accent">in 10 Minutes</span></h1>
+      <p class="sub">One sheet of paper. One cut. Eight pages. Using the free tool at dirtylittlezine.com</p>
+      <span class="tag">✂️ No InDesign · No sign-up · Prints at home</span>
+    </div>
+  </section>
+
+  <!-- 2 What is a zine -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">The Idea</div>
+      <h2>What's a zine?</h2>
+      <p class="sub">A tiny self-published booklet — stapled, folded, photocopied, alive. Photos, sketches, poems, rants. The classic mini-zine is made from a single folded sheet.</p>
+      <div class="grid">
+        <div class="card"><div class="ico">📷</div><h3>Photo zines</h3><p>Print a set of shots as a pocket booklet.</p></div>
+        <div class="card"><div class="ico">✍️</div><h3>Writing</h3><p>Poems, essays, mini-comics, manifestos.</p></div>
+        <div class="card"><div class="ico">🎨</div><h3>Sketchbooks</h3><p>Share illustration pages the DIY way.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 Why DLZ -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">The Tool</div>
+      <h2>Why Dirty Little Zine?</h2>
+      <div class="cmp">
+        <div class="col">
+          <h3>The old way</h3>
+          <ul>
+            <li>Open InDesign or Photoshop</li>
+            <li>Figure out panel rotation by hand</li>
+            <li>Pages print upside-down after folding</li>
+            <li>Paid software, steep learning curve</li>
+          </ul>
+        </div>
+        <div class="vs">VS</div>
+        <div class="col">
+          <h3>Dirty Little Zine</h3>
+          <ul>
+            <li>Free, runs in your browser</li>
+            <li>Auto-rotates &amp; orders every panel</li>
+            <li>Prints correctly, folds perfectly</li>
+            <li>Nothing leaves your device</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 The 8-page concept -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">How It Works</div>
+      <h2>One sheet becomes <span class="accent">8 pages</span></h2>
+      <p class="sub">The tool lays out eight panels on a single sheet. After one fold-and-cut, they become a booklet: a cover, a back, and three interior spreads.</p>
+      <div class="panels">
+        <div class="panel cover"><span class="pn">1</span>Cover</div>
+        <div class="panel"><span class="pn">2</span>Page</div>
+        <div class="panel"><span class="pn">3</span>Page</div>
+        <div class="panel"><span class="pn">4</span>Page</div>
+        <div class="panel"><span class="pn">5</span>Page</div>
+        <div class="panel"><span class="pn">6</span>Page</div>
+        <div class="panel"><span class="pn">7</span>Page</div>
+        <div class="panel cover"><span class="pn">8</span>Back</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 Step flow: build in editor -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">In the Editor</div>
+      <h2>Build it in 4 moves</h2>
+      <div class="flow">
+        <div class="step"><span class="num">1</span><h3>Pick paper</h3><p>Choose US Letter, A4, or A3 at the top.</p></div>
+        <div class="arrow">→</div>
+        <div class="step"><span class="num">2</span><h3>Add photos</h3><p>Click a panel, upload an image, set contain or cover fit.</p></div>
+        <div class="arrow">→</div>
+        <div class="step"><span class="num">3</span><h3>Add captions</h3><p>Type custom text on any panel.</p></div>
+        <div class="arrow">→</div>
+        <div class="step"><span class="num">4</span><h3>Reorder</h3><p>Drag &amp; drop panels until the flow feels right.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 Panel tips -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">Layout Tips</div>
+      <h2>Get the panels right</h2>
+      <ul class="ilist">
+        <li><span class="li-ico">🖼️</span><span class="li-txt">Cover first<small>Panel 1 is your title page — make it grab attention.</small></span></li>
+        <li><span class="li-ico">🔳</span><span class="li-txt">Cover vs contain<small>"Cover" fills the panel (may crop); "contain" shows the whole image.</small></span></li>
+        <li><span class="li-ico">🔤</span><span class="li-txt">Keep captions short<small>Panels are small — a few words read better than a paragraph.</small></span></li>
+        <li><span class="li-ico">↔️</span><span class="li-txt">Drag to re-sequence<small>Story order matters; rearrange until it reads like a booklet.</small></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7 Export stat -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">Export</div>
+      <h2>Print-ready quality</h2>
+      <div class="stat">300<span style="font-size:48px;"> DPI</span></div>
+      <p class="stat-label">Export as a high-res <span class="accent">JPG</span> or multi-page <span class="accent">PDF</span>, then hit "Print Your Zine!"</p>
+    </div>
+  </section>
+
+  <!-- 8 Folding -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">The Fold</div>
+      <h2>One sheet → one booklet</h2>
+      <div class="flow">
+        <div class="step"><span class="num">1</span><h3>Long fold</h3><p>Fold in half the long way. Crease, unfold.</p></div>
+        <div class="arrow">→</div>
+        <div class="step"><span class="num">2</span><h3>Short folds</h3><p>Fold into eighths — you'll see 8 rectangles.</p></div>
+        <div class="arrow">→</div>
+        <div class="step"><span class="num">3</span><h3>Cut center</h3><p>Slit the middle crease, one panel deep.</p></div>
+        <div class="arrow">→</div>
+        <div class="step"><span class="num">4</span><h3>Pop &amp; collapse</h3><p>Push ends in, press flat into a booklet.</p></div>
+      </div>
+      <span class="tag">🎬 Site links a 2-min fold video by Alison Spence</span>
+    </div>
+  </section>
+
+  <!-- 9 Quote / ethos -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">The Spirit</div>
+      <p class="quote">I love zines. The DIY kind especially — stapled, photocopied, cheap, alive.</p>
+      <p class="attr">— Rick (Filmrick), maker of Dirty Little Zine</p>
+    </div>
+  </section>
+
+  <!-- 10 Takeaway -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">Your Turn</div>
+      <h2>Go make a <span class="accent">dirty little zine</span></h2>
+      <ul class="ilist">
+        <li><span class="li-ico">🌐</span><span class="li-txt">Open dirtylittlezine.com<small>Runs offline after first load — no account needed.</small></span></li>
+        <li><span class="li-ico">🖨️</span><span class="li-txt">Design, export, print<small>8 panels on one sheet at 300 DPI.</small></span></li>
+        <li><span class="li-ico">✂️</span><span class="li-txt">Fold, cut, share<small>One cut, eight pages, done.</small></span></li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<div class="counter" id="counter">1 / 10</div>
+<div class="hint">← → to navigate</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let i=0;
+  const prog=document.getElementById('prog');
+  const counter=document.getElementById('counter');
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,x)=>s.classList.toggle('active',x===i));
+    counter.textContent=(i+1)+' / '+slides.length;
+    prog.style.width=((i+1)/slides.length*100)+'%';
+  }
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' ')show(i+1);
+    else if(e.key==='ArrowLeft')show(i-1);
+    else if(e.key==='Home')show(0);
+    else if(e.key==='End')show(slides.length-1);
+  });
+  document.getElementById('deck').addEventListener('click',e=>{
+    const x=e.clientX/window.innerWidth;
+    show(x<0.25?i-1:i+1);
+  });
+  show(0);
+</script>
+</body>
+</html>
