@@ -92,6 +92,8 @@
   .tag{display:inline-block;background:rgba(244,63,94,.12);color:var(--accent);
     border:1px solid rgba(244,63,94,.4);border-radius:999px;
     padding:8px 18px;font-size:16px;font-weight:600;margin-top:28px;}
+  .link{color:var(--accent);text-decoration:underline;text-underline-offset:3px;}
+  .link:hover{color:#fff;}
 </style>
 </head>
 <body>
@@ -103,7 +105,7 @@
     <div class="inner">
       <div class="kicker">A DIY Tutorial</div>
       <h1>Make a Zine in Your<br>Browser <span class="accent">in 10 Minutes</span></h1>
-      <p class="sub">One sheet of paper. One cut. Eight pages. Using the free tool at dirtylittlezine.com</p>
+      <p class="sub">One sheet of paper. One cut. Eight pages. Using the free tool at <a href="https://dirtylittlezine.com" target="_blank" rel="noopener" class="link">dirtylittlezine.com</a></p>
       <span class="tag">✂️ No InDesign · No sign-up · Prints at home</span>
     </div>
   </section>
@@ -225,7 +227,7 @@
         <div class="arrow">→</div>
         <div class="step"><span class="num">4</span><h3>Pop &amp; collapse</h3><p>Push ends in, press flat into a booklet.</p></div>
       </div>
-      <span class="tag">🎬 Site links a 2-min fold video by Alison Spence</span>
+      <a href="https://www.youtube.com/watch?v=MKM3PfFhsbQ" target="_blank" rel="noopener" class="tag" style="text-decoration:none;">🎬 Watch the 2-min fold video by Alison Spence ↗</a>
     </div>
   </section>
 
@@ -244,7 +246,7 @@
       <div class="kicker">Your Turn</div>
       <h2>Go make a <span class="accent">dirty little zine</span></h2>
       <ul class="ilist">
-        <li><span class="li-ico">🌐</span><span class="li-txt">Open dirtylittlezine.com<small>Runs offline after first load — no account needed.</small></span></li>
+        <li><span class="li-ico">🌐</span><span class="li-txt">Open <a href="https://dirtylittlezine.com" target="_blank" rel="noopener" class="link">dirtylittlezine.com</a><small>Runs offline after first load — no account needed.</small></span></li>
         <li><span class="li-ico">🖨️</span><span class="li-txt">Design, export, print<small>8 panels on one sheet at 300 DPI.</small></span></li>
         <li><span class="li-ico">✂️</span><span class="li-txt">Fold, cut, share<small>One cut, eight pages, done.</small></span></li>
       </ul>
@@ -274,6 +276,7 @@
     else if(e.key==='End')show(slides.length-1);
   });
   document.getElementById('deck').addEventListener('click',e=>{
+    if(e.target.closest('a'))return; // let real links open normally
     const x=e.clientX/window.innerWidth;
     show(x<0.25?i-1:i+1);
   });
