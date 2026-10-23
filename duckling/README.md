@@ -2,9 +2,13 @@
 
 A 17.5 cm, 3D-printed walking duck. It waddles, dances, turns its head, blinks
 OLED eyes, quacks, and is driven from your phone over its own Wi-Fi.
-About **$30–35 in parts** plus about 100 g of PLA.
+About **$33 in parts** (range $27–42) plus about 150 g of PLA. See [docs/COST.md](docs/COST.md).
 
-![Duckling](renders/duckling_front34.png)
+| Rendered from the real CAD | Artist's impression (AI-generated from the render) |
+|---|---|
+| ![Render](renders/impression_hero.png) | ![Impression](renders/ai_impression_desk.png) |
+
+More views: [waddling](renders/impression_waddle.png), [front](renders/impression_front.png), [side](renders/impression_side.png), [back](renders/impression_back.png), [exploded](renders/impression_exploded.png).
 
 > **Status: prototype, not yet test-printed.** The CAD passes the collision checks
 > (`cad/check.py`, `cad/motion_check.py`) and the firmware compiles, but nothing has

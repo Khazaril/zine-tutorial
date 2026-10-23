@@ -1,0 +1,100 @@
+<!doctype html><html><body style="margin:0">
+<script type="module">
+import * as THREE from './three.module.js';
+import { STLLoader } from './STLLoader.js';
+
+const P = new URLSearchParams(location.search);
+const W = 1600, H = 1200;
+const view = P.get('view') || 'hero';
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(P.get('bg') || '#f3ece0');
+const cam = new THREE.PerspectiveCamera(28, W / H, 1, 5000);
+cam.up.set(0, 0, 1);
+
+scene.add(new THREE.HemisphereLight('#fff8ee', '#a89a85', 1.4));
+const sun = new THREE.DirectionalLight('#ffffff', 2.6);
+sun.position.set(220, -260, 420); sun.castShadow = true;
+sun.shadow.mapSize.set(4096, 4096);
+Object.assign(sun.shadow.camera, { left: -260, right: 260, top: 260, bottom: -260, near: 10, far: 1500 });
+sun.shadow.radius = 6; sun.shadow.bias = -0.0004;
+scene.add(sun);
+const rim = new THREE.DirectionalLight('#ffe3b0', 1.2); rim.position.set(-300, 200, 200); scene.add(rim);
+
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(4000, 4000),
+  new THREE.MeshStandardMaterial({ color: P.get('floor') || '#d9c3a0', roughness: 0.85 }));
+ground.position.z = -55.45; ground.receiveShadow = true; scene.add(ground);
+
+const plastic = c => new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.38, clearcoat: 0.35, clearcoatRoughness: 0.4 });
+const MAT = { yellow: plastic('#f7c531'), orange: plastic('#f07a1a'), white: plastic('#eeeeee'),
+  servo: new THREE.MeshStandardMaterial({ color: '#2f63d6', roughness: 0.5 }) };
+const PARTS = { chassis: 'yellow', shell: 'yellow', tray: 'white', leg_left: 'yellow', leg_right: 'yellow',
+  foot_left: 'orange', foot_right: 'orange', head_base: 'yellow', head_shell: 'yellow', beak: 'orange',
+  _servo0: 'servo', _servo1: 'servo', _servo2: 'servo', _servo3: 'servo', _servo4: 'servo' };
+
+// OLED face: two white rounded eyes on black glass
+function screenTex(mood) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 128;
+  const g = c.getContext('2d'); g.fillStyle = '#05070a'; g.fillRect(0, 0, 256, 128);
+  g.fillStyle = '#eaf6ff'; g.shadowColor = '#9fd8ff'; g.shadowBlur = 10;
+  for (const cx of [72, 184]) {
+    if (mood === 'happy') { g.lineWidth = 12; g.strokeStyle = '#eaf6ff'; g.beginPath(); g.arc(cx, 82, 30, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); }
+    else { g.beginPath(); g.roundRect(cx - 34, 24, 68, 80, 22); g.fill();
+      g.save(); g.fillStyle = '#05070a'; g.shadowBlur = 0; g.beginPath(); g.arc(cx + 12, 46, 9, 0, 7); g.fill(); g.restore(); }
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+
+const loader = new STLLoader();
+const groups = { head: new THREE.Group(), legL: new THREE.Group(), legR: new THREE.Group(),
+  footL: new THREE.Group(), footR: new THREE.Group(), body: new THREE.Group() };
+const which = n => n.startsWith('head') || n === 'beak' ? 'head' : n === 'leg_left' || n === '_servo2' ? 'legL'
+  : n === 'leg_right' || n === '_servo3' ? 'legR' : n === 'foot_left' ? 'footL' : n === 'foot_right' ? 'footR' : 'body';
+// pivots: head turns about the neck shaft, legs about the hips, feet about the ankles
+const pivot = (g, x, y, z) => { const p = new THREE.Group(); p.position.set(x, y, z); g.position.set(-x, -y, -z); p.add(g); return p; };
+const headP = pivot(groups.head, 20, 0, 0);
+const footLP = pivot(groups.footL, 0, 25, -35.05), footRP = pivot(groups.footR, 0, -25, -35.05);
+groups.legL.add(footLP); groups.legR.add(footRP);
+const legLP = pivot(groups.legL, 0, 25, 0), legRP = pivot(groups.legR, 0, -25, 0);
+const duck = new THREE.Group(); duck.add(groups.body, headP, legLP, legRP); scene.add(duck);
+
+const screen = new THREE.Mesh(new THREE.PlaneGeometry(25, 14),
+  new THREE.MeshBasicMaterial({ map: screenTex(P.get('mood')) }));
+screen.rotation.set(Math.PI / 2, Math.PI / 2, 0); screen.position.set(45.6, 0, 94); groups.head.add(screen);
+
+await Promise.all(Object.entries(PARTS).map(([n, m]) => new Promise(res => loader.load(`stl/${n}.stl`, geo => {
+  geo.computeVertexNormals();
+  const mesh = new THREE.Mesh(geo, MAT[m]); mesh.castShadow = mesh.receiveShadow = true; mesh.name = n;
+  groups[which(n)].add(mesh); res();
+}))));
+
+const deg = THREE.MathUtils.degToRad;
+const pose = { head: +P.get('head') || 0, hipL: +P.get('hipL') || 0, hipR: +P.get('hipR') || 0,
+  ankL: +P.get('ankL') || 0, ankR: +P.get('ankR') || 0, tilt: +P.get('tilt') || 0 };
+headP.rotation.z = deg(pose.head); legLP.rotation.z = deg(pose.hipL); legRP.rotation.z = deg(pose.hipR);
+footLP.rotation.x = deg(pose.ankL); footRP.rotation.x = deg(pose.ankR);
+duck.rotation.x = deg(pose.tilt);   // whole duck leaning onto one foot
+
+if (P.get('explode')) {
+  const off = { head: [0, 0, 70], body: [0, 0, 0], legL: [0, 25, -40], legR: [0, -25, -40] };
+  for (const [k, v] of Object.entries(off)) groups[k].position.add(new THREE.Vector3(...v));
+  groups.body.children.forEach(m => { if (m.name === 'shell') m.position.z += 60; if (m.name === 'tray') m.position.z += 30; });
+  groups.footL.position.add(new THREE.Vector3(-15, 10, -25)); groups.footR.position.add(new THREE.Vector3(-15, -10, -25));
+  ground.position.z = -130;
+}
+
+const az = deg(+(P.get('az') ?? -38)), el = deg(+(P.get('el') ?? 14)), dist = +(P.get('dist') || 620);
+const tgt = new THREE.Vector3(0, 0, +(P.get('tz') || 30));
+cam.position.set(tgt.x + dist * Math.cos(el) * Math.cos(az), tgt.y + dist * Math.cos(el) * Math.sin(az), tgt.z + dist * Math.sin(el));
+cam.lookAt(tgt);
+renderer.render(scene, cam);
+window.DONE = true;
+</script></body></html>
