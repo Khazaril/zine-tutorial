@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Changying Pure Twist</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Changying: leather bags twisted, knotted and folded by hand, one at a time, by a single maker.">
+<meta name="description" content="Changying: leather bags twisted, knotted and folded by hand, one at a time, by Océan.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap">
@@ -255,6 +255,7 @@ p { margin: 0; }
   margin: 0; font-family: var(--font-display); font-style: italic; font-size: var(--step-2); line-height: 1.25; color: var(--ink);
   max-width: 24ch;
 }
+.maker-copy blockquote cite { display: block; margin-top: 14px; font: 400 var(--step--1) / 1.4 var(--font-body); font-style: normal; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); }
 .figures { display: flex; flex-wrap: wrap; gap: 20px 48px; padding-top: 22px; border-top: 1px solid var(--line); }
 .figures div { display: grid; gap: 2px; }
 .figures b { font-family: var(--font-display); font-weight: 400; font-size: var(--step-3); line-height: 1; font-variant-numeric: tabular-nums; }
@@ -304,7 +305,7 @@ footer p { font-size: var(--step--1); letter-spacing: .16em; text-transform: upp
     <nav aria-label="Main">
       <a href="#collection">Collection</a>
       <a href="#craft" class="opt">Craft</a>
-      <a href="#maker" class="opt">The maker</a>
+      <a href="#maker" class="opt">Océan</a>
       <a href="#commission">Commission</a>
     </nav>
   </div>
@@ -316,7 +317,7 @@ footer p { font-size: var(--step--1); letter-spacing: .16em; text-transform: upp
       <div class="hero-copy">
         <span class="logo hero-logo rise" role="img" aria-label="Changying Pure Twist"></span>
         <h1 class="rise d1">Leather bags twisted, knotted and folded by hand.</h1>
-        <p class="lede rise d2">Each Changying bag is made from start to finish by one woman, one strip of leather at a time. Every piece is paired with the plant that inspired it.</p>
+        <p class="lede rise d2">Each Changying bag is made from start to finish by its founder, Océan, one strip of leather at a time. Every piece is paired with the plant that inspired it.</p>
         <div class="hero-cta rise d3">
           <a class="btn" href="#collection">See the collection</a>
           <a class="btn ghost" href="#commission">Commission a bag</a>
@@ -457,9 +458,9 @@ footer p { font-size: var(--step--1); letter-spacing: .16em; text-transform: upp
       <div class="maker-img"><img src="assets/fringe.jpg" alt="Braided leather beads and fringe, knotted by hand" data-parallax="0.12" loading="lazy"></div>
       <div class="maker-copy">
         <p class="eyebrow">The maker</p>
-        <h2>One pair of <em>hands</em></h2>
-        <blockquote>“I want each bag to feel like it grew, not like it was manufactured.”</blockquote>
-        <p>Changying is a one-woman studio. She designs every bag, cuts every strip and ties every knot herself. That means fewer bags each year, and every one of them has been held, turned and finished by the person who imagined it.</p>
+        <h2>Meet <em>Océan</em></h2>
+        <blockquote>“I want each bag to feel like it grew, not like it was manufactured.”<cite>Océan, founder of Changying</cite></blockquote>
+        <p>Changying is Océan’s one-woman studio. She designs every bag, cuts every strip and ties every knot herself. That means fewer bags each year, and every one of them has been held, turned and finished by the person who imagined it.</p>
         <p>Because each piece is made to order, colours, sizes and handles can be adjusted for you.</p>
         <div class="figures">
           <div><b>1</b><span>Maker</span></div>
@@ -475,7 +476,7 @@ footer p { font-size: var(--step--1); letter-spacing: .16em; text-transform: upp
       <div class="commission-copy">
         <p class="eyebrow">Commission</p>
         <h2>Begin your <em>bag</em></h2>
-        <p>Tell her which piece you love, the colour you have in mind, and how you will carry it. She replies personally to every enquiry, usually within a few days.</p>
+        <p>Tell Océan which piece you love, the colour you have in mind, and how you will carry it. She replies personally to every enquiry, usually within a few days.</p>
         <p>Each commission takes four to eight weeks, depending on the technique.</p>
       </div>
       <form id="commissionForm" novalidate>
@@ -631,9 +632,9 @@ footer p { font-size: var(--step--1); letter-spacing: .16em; text-transform: upp
     e.preventDefault();
     const name = form.elements.name.value.trim();
     const email = form.elements.email.value.trim();
-    if (!name) { note.textContent = 'Please add your name so she knows who to reply to.'; form.elements.name.focus(); return; }
+    if (!name) { note.textContent = 'Please add your name so Océan knows who to reply to.'; form.elements.name.focus(); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { note.textContent = 'Please check your email address, it looks incomplete.'; form.elements.email.focus(); return; }
-    note.textContent = `Thank you, ${name}. This is a demo, so nothing was sent. On the live site, your enquiry about ${form.elements.piece.value} would go straight to the studio.`;
+    note.textContent = `Thank you, ${name}. This is a demo, so nothing was sent. On the live site, your enquiry about ${form.elements.piece.value} would go straight to Océan.`;
     form.reset();
   });
 })();
