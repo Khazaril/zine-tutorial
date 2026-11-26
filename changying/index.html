@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Changying Pure Twist</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Changying: leather bags twisted, knotted and folded by hand, one at a time, by a single maker.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap">
+<style>
+/* Layout: misty studio backdrop like the campaign photos; logo-led hero, a sticky
+   photo stage that changes with each piece, and a hand-twisted strand drawn through the process. */
+:root {
+  --mist: #E5E7EA;        /* the grey seamless backdrop in the photographs */
+  --paper: #F2F3F4;
+  --ink: #33312F;         /* the logo's charcoal */
+  --ink-soft: #6A6A6D;
+  --line: rgba(51, 49, 47, .14);
+  --leather: #B9A88F;     /* taupe nappa */
+  --accent: #5C74AE;      /* changes with the active piece */
+  --field: #FFFFFF;
+  --photo: #DEE0E3;       /* the photos' own backdrop, same in both themes */
+  --font-display: "Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif;
+  --font-body: "Jost", "Futura", "Century Gothic", "Avenir Next", system-ui, sans-serif;
+  --step--1: .8rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.35rem;
+  --step-2: clamp(1.7rem, 1.3rem + 1.6vw, 2.4rem);
+  --step-3: clamp(2.3rem, 1.6rem + 3vw, 3.9rem);
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  --ease: cubic-bezier(.22, .7, .18, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --mist: #1D1E20; --paper: #252628; --ink: #ECEAE6; --ink-soft: #A5A5A8;
+    --line: rgba(236, 234, 230, .14); --leather: #C9B89D; --accent: #8EA3D8; --field: #2C2D30;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --mist: #1D1E20; --paper: #252628; --ink: #ECEAE6; --ink-soft: #A5A5A8;
+  --line: rgba(236, 234, 230, .14); --leather: #C9B89D; --accent: #8EA3D8; --field: #2C2D30;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--mist);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: var(--step-0);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 60; background: var(--mist);
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.wrap {
+  max-width: 1240px; margin: 0 auto;
+  padding-left: var(--gutter-l); padding-right: var(--gutter-r);
+}
+.eyebrow {
+  font-size: var(--step--1); letter-spacing: .32em; text-transform: uppercase;
+  font-weight: 400; color: var(--ink-soft); margin: 0;
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; text-wrap: balance; margin: 0; line-height: 1.08; }
+h2 { font-size: var(--step-3); }
+h2 em, h3 em { font-style: italic; }
+p { margin: 0; }
+
+/* The logo, used as a mask so it takes the theme's ink colour */
+.logo {
+  display: block; aspect-ratio: 918 / 282; background: var(--ink);
+  -webkit-mask: url("assets/logo-dark.png") center / contain no-repeat;
+  mask: url("assets/logo-dark.png") center / contain no-repeat;
+}
+
+/* ---------- Header ---------- */
+.site-head {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
+  background: color-mix(in srgb, var(--mist) 86%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid transparent;
+  transition: border-color .4s;
+}
+.site-head.scrolled { border-bottom-color: var(--line); }
+.site-head .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 14px; }
+.site-head .logo { width: 132px; }
+.site-head nav { display: flex; gap: clamp(14px, 3vw, 36px); }
+.site-head nav a {
+  text-decoration: none; font-size: var(--step--1); letter-spacing: .22em; text-transform: uppercase;
+  font-weight: 400; position: relative; padding-block: 4px;
+}
+.site-head nav a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor;
+  transform: scaleX(0); transform-origin: right; transition: transform .45s var(--ease);
+}
+.site-head nav a:hover::after { transform: scaleX(1); transform-origin: left; }
+@media (max-width: 640px) { .site-head nav a.opt { display: none; } .site-head .logo { width: 112px; } }
+
+/* ---------- Hero ---------- */
+.hero .wrap {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(28px, 5vw, 80px); align-items: center; padding-block: clamp(32px, 6vw, 88px);
+}
+.hero-copy { display: grid; gap: 28px; min-width: 0; }
+.hero-logo { width: min(100%, 440px); }
+.hero-copy h1 { font-size: var(--step-2); font-style: italic; max-width: 20ch; }
+.hero-copy .lede { max-width: 44ch; color: var(--ink-soft); }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 14px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer;
+  font: 400 var(--step--1) / 1 var(--font-body); letter-spacing: .22em; text-transform: uppercase;
+  padding: 16px 26px; border-radius: 999px; border: 1px solid var(--ink);
+  background: var(--ink); color: var(--mist);
+  transition: background .35s, color .35s, transform .35s var(--ease);
+}
+.btn:hover { transform: translateY(-2px); }
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn.ghost:hover { background: var(--ink); color: var(--mist); }
+
+.hero-stage { position: relative; aspect-ratio: 4 / 5; max-width: 100%; overflow: hidden; background: var(--photo); }
+.hero-stage img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  opacity: 0; transform: scale(1.06); transition: opacity 1.6s var(--ease), transform 7s linear;
+}
+.hero-stage img.on { opacity: 1; transform: scale(1); }
+.hero-caption {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+  margin-top: 14px; font-size: var(--step--1); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft);
+}
+.hero-caption b { font-weight: 400; color: var(--ink); }
+.dots { display: flex; gap: 8px; }
+.dots button {
+  width: 26px; height: 18px; border: 0; padding: 0; cursor: pointer; background: none; position: relative;
+}
+.dots button::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--line); }
+.dots button.on::before { background: var(--ink); height: 2px; }
+@media (max-width: 860px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); }
+  .hero-stage { aspect-ratio: 4 / 4.4; }
+}
+
+/* load sequence: starts visible, only drifts into place */
+@media (prefers-reduced-motion: no-preference) {
+  .rise { animation: rise 1.2s var(--ease) both; }
+  .rise.d1 { animation-delay: .12s; } .rise.d2 { animation-delay: .24s; } .rise.d3 { animation-delay: .36s; }
+  @keyframes rise { from { transform: translateY(18px); opacity: .35; } to { transform: none; opacity: 1; } }
+}
+
+/* ---------- Words band ---------- */
+.band { border-block: 1px solid var(--line); overflow: hidden; background: var(--paper); }
+.band-track {
+  display: flex; gap: 56px; width: max-content; padding-block: 20px;
+  font-family: var(--font-display); font-style: italic; font-size: var(--step-1); color: var(--ink-soft);
+}
+.band-track span::after { content: "·"; margin-left: 56px; color: var(--leather); font-style: normal; }
+@media (prefers-reduced-motion: no-preference) {
+  .band-track { animation: drift 48s linear infinite; }
+  @keyframes drift { to { transform: translateX(-50%); } }
+}
+
+/* ---------- Intro statement ---------- */
+.statement .wrap { padding-block: clamp(64px, 10vw, 140px); display: grid; gap: 28px; justify-items: center; text-align: center; }
+.statement p.big {
+  font-family: var(--font-display); font-size: var(--step-2); line-height: 1.3; max-width: 30ch; text-wrap: balance;
+}
+.statement p.big em { color: var(--accent); transition: color .8s; }
+
+/* ---------- Collection ---------- */
+.collection { --accent-local: var(--accent); }
+.collection-head { padding-bottom: 40px; display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; }
+.collection-head p.note { max-width: 38ch; color: var(--ink-soft); }
+.collection-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 96px); }
+.stage { position: sticky; top: 92px; align-self: start; height: min(78vh, 760px); }
+.stage-frame { position: relative; height: 100%; overflow: hidden; background: var(--photo); }
+.stage-frame img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  opacity: 0; transform: scale(1.04); transition: opacity 1s var(--ease), transform 1.4s var(--ease);
+}
+.stage-frame img.on { opacity: 1; transform: scale(1); }
+.stage-count {
+  position: absolute; left: 18px; bottom: 16px; z-index: 2; font-size: var(--step--1); letter-spacing: .2em;
+  background: color-mix(in srgb, var(--mist) 80%, transparent); padding: 6px 12px; border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.pieces { display: grid; }
+.piece { min-height: 78vh; display: grid; align-content: center; gap: 22px; padding-block: 48px; min-width: 0; }
+.piece .inline-img { display: none; }
+.piece .tag { display: inline-flex; align-items: center; gap: 10px; }
+.piece .tag i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); display: inline-block; }
+.piece h3 { font-size: var(--step-3); }
+.piece h3 em { color: var(--c); }
+.piece p.desc { max-width: 44ch; color: var(--ink-soft); }
+.specs { display: grid; grid-template-columns: auto 1fr; gap: 10px 28px; margin: 0; padding-top: 18px; border-top: 1px solid var(--line); max-width: 440px; }
+.specs dt { font-size: var(--step--1); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); padding-top: 3px; }
+.specs dd { margin: 0; font-variant-numeric: tabular-nums; }
+.piece .ask {
+  justify-self: start; text-decoration: none; font-size: var(--step--1); letter-spacing: .22em; text-transform: uppercase;
+  border-bottom: 1px solid var(--c); padding-bottom: 4px; font-weight: 400;
+}
+.piece .ask:hover { color: var(--c); }
+.piece { opacity: .45; transition: opacity .8s var(--ease); }
+.piece.on { opacity: 1; }
+@media (max-width: 860px) {
+  .collection-grid { grid-template-columns: minmax(0, 1fr); }
+  .stage { display: none; }
+  .piece { min-height: 0; opacity: 1; padding-block: 28px 56px; }
+  .piece .inline-img { display: block; width: 100%; height: auto; background: var(--photo); }
+}
+
+/* ---------- Process with the twisted strand ---------- */
+.process { position: relative; background: var(--paper); border-block: 1px solid var(--line); margin-top: clamp(48px, 8vw, 120px); }
+.process .wrap { padding-block: clamp(64px, 9vw, 130px); position: relative; }
+.process-head { display: grid; gap: 18px; max-width: 640px; }
+.process-head p { color: var(--ink-soft); max-width: 48ch; }
+.strand-wrap { position: relative; margin-block: 48px 8px; height: 120px; }
+.strand { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.strand path { fill: none; stroke-linecap: round; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
+.steps li { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.steps .n { font-family: var(--font-display); font-style: italic; font-size: var(--step-2); color: var(--leather); line-height: 1; }
+.steps h4 { margin: 0; font-weight: 400; letter-spacing: .2em; text-transform: uppercase; font-size: var(--step--1); }
+.steps p { color: var(--ink-soft); font-size: .98rem; }
+@media (max-width: 860px) {
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .strand-wrap { height: 90px; }
+}
+
+/* ---------- Maker ---------- */
+.maker .wrap {
+  display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 96px);
+  align-items: center; padding-block: clamp(64px, 10vw, 140px);
+}
+.maker-img { position: relative; overflow: hidden; aspect-ratio: 4 / 5; max-width: 100%; }
+.maker-img { background: var(--photo); }
+.maker-img img { position: absolute; left: 0; top: 0; width: 100%; height: 116%; max-width: none; object-fit: cover; will-change: transform; }
+.maker-copy { display: grid; gap: 24px; min-width: 0; }
+.maker-copy p { max-width: 50ch; color: var(--ink-soft); }
+.maker-copy blockquote {
+  margin: 0; font-family: var(--font-display); font-style: italic; font-size: var(--step-2); line-height: 1.25; color: var(--ink);
+  max-width: 24ch;
+}
+.figures { display: flex; flex-wrap: wrap; gap: 20px 48px; padding-top: 22px; border-top: 1px solid var(--line); }
+.figures div { display: grid; gap: 2px; }
+.figures b { font-family: var(--font-display); font-weight: 400; font-size: var(--step-3); line-height: 1; font-variant-numeric: tabular-nums; }
+.figures span { font-size: var(--step--1); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-soft); }
+@media (max-width: 860px) { .maker .wrap { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Commission ---------- */
+.commission { background: var(--ink); color: var(--mist); }
+.commission .wrap {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(28px, 6vw, 96px);
+  padding-block: clamp(64px, 9vw, 130px);
+}
+.commission .eyebrow { color: color-mix(in srgb, var(--mist) 65%, transparent); }
+.commission-copy { display: grid; gap: 22px; align-content: start; min-width: 0; }
+.commission-copy p { max-width: 42ch; color: color-mix(in srgb, var(--mist) 78%, transparent); }
+form { display: grid; gap: 18px; min-width: 0; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+label { display: grid; gap: 8px; font-size: var(--step--1); letter-spacing: .2em; text-transform: uppercase; color: color-mix(in srgb, var(--mist) 70%, transparent); }
+input, select, textarea {
+  font: 300 1rem/1.5 var(--font-body); color: var(--mist); background: transparent;
+  border: 0; border-bottom: 1px solid color-mix(in srgb, var(--mist) 35%, transparent);
+  padding: 10px 0; border-radius: 0; width: 100%; min-width: 0;
+}
+select option { color: #222; }
+textarea { resize: vertical; min-height: 96px; }
+input:focus, select:focus, textarea:focus { outline: none; border-bottom-color: var(--mist); }
+.commission .btn { background: var(--mist); color: var(--ink); border-color: var(--mist); justify-self: start; }
+.form-note { font-size: .95rem; color: color-mix(in srgb, var(--mist) 80%, transparent); min-height: 1.6em; }
+@media (max-width: 860px) { .commission .wrap { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 480px) { .row { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Footer ---------- */
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px; padding-block: 44px; }
+footer .logo { width: 150px; }
+footer p { font-size: var(--step--1); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-head" id="top">
+  <div class="wrap">
+    <a href="#top" aria-label="Changying, back to top"><span class="logo" role="img" aria-label="Changying Pure Twist"></span></a>
+    <nav aria-label="Main">
+      <a href="#collection">Collection</a>
+      <a href="#craft" class="opt">Craft</a>
+      <a href="#maker" class="opt">The maker</a>
+      <a href="#commission">Commission</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="logo hero-logo rise" role="img" aria-label="Changying Pure Twist"></span>
+        <h1 class="rise d1">Leather bags twisted, knotted and folded by hand.</h1>
+        <p class="lede rise d2">Each Changying bag is made from start to finish by one woman, one strip of leather at a time. Every piece is paired with the plant that inspired it.</p>
+        <div class="hero-cta rise d3">
+          <a class="btn" href="#collection">See the collection</a>
+          <a class="btn ghost" href="#commission">Commission a bag</a>
+        </div>
+      </div>
+      <div class="rise d1">
+        <div class="hero-stage" id="heroStage">
+          <img class="on" src="assets/hydrangea.jpg" alt="Cream leather bag covered in folded petals, with a blue hydrangea rising from the handle" data-name="Hydrangea" data-tech="Petal fold">
+          <img src="assets/cotton.jpg" alt="Taupe hand-knotted leather bag hooked onto a twisting branch with a cotton boll" data-name="Cotton Branch" data-tech="Star knot" loading="lazy">
+          <img src="assets/calla.jpg" alt="Slate grey knotted leather bag holding white calla lilies" data-name="Calla" data-tech="Square knot" loading="lazy">
+          <img src="assets/fringe.jpg" alt="Pale leather fringe bag with braided knot beads beside a spray of wild grass" data-name="Silver Grass" data-tech="Braided fringe" loading="lazy">
+        </div>
+        <div class="hero-caption">
+          <span><b id="heroName">Hydrangea</b> &nbsp;/&nbsp; <span id="heroTech">Petal fold</span></span>
+          <div class="dots" id="heroDots" role="tablist" aria-label="Choose photograph"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band" aria-hidden="true">
+    <div class="band-track">
+      <span>Twisted</span><span>Knotted</span><span>Folded</span><span>Braided</span><span>Hand-stitched</span><span>Edge-burnished</span><span>Made to order</span>
+      <span>Twisted</span><span>Knotted</span><span>Folded</span><span>Braided</span><span>Hand-stitched</span><span>Edge-burnished</span><span>Made to order</span>
+    </div>
+  </div>
+
+  <section class="statement">
+    <div class="wrap">
+      <p class="eyebrow">Pure Twist</p>
+      <p class="big">No two bags are alike. Each one starts as a single hide and a living plant, and grows <em>one knot at a time</em> until the leather holds its own shape.</p>
+    </div>
+  </section>
+
+  <section class="collection" id="collection">
+    <div class="wrap">
+      <div class="collection-head">
+        <div style="display:grid;gap:14px">
+          <p class="eyebrow">The collection</p>
+          <h2>Four bags, <em>four plants</em></h2>
+        </div>
+        <p class="note">Every design is shown here with the plant it was made beside. Sizes and hours are typical; each commission is cut to order.</p>
+      </div>
+
+      <div class="collection-grid">
+        <div class="stage" aria-hidden="true">
+          <div class="stage-frame" id="stage">
+            <img class="on" src="assets/hydrangea.jpg" alt="">
+            <img src="assets/cotton.jpg" alt="" loading="lazy">
+            <img src="assets/calla.jpg" alt="" loading="lazy">
+            <img src="assets/fringe.jpg" alt="" loading="lazy">
+            <span class="stage-count" id="stageCount">01 / 04</span>
+          </div>
+        </div>
+
+        <div class="pieces">
+          <article class="piece on" data-i="0" data-accent="#5C74AE" data-accent-dark="#8EA3D8" style="--c: var(--accent)">
+            <img class="inline-img" src="assets/hydrangea.jpg" alt="Cream petal-fold leather bag with blue hydrangea" loading="lazy">
+            <p class="eyebrow tag"><i></i>Paired with hydrangea</p>
+            <h3>The <em>Hydrangea</em></h3>
+            <p class="desc">Dozens of leather discs are cut, pinched and stitched into overlapping petals, so the bag blooms the same way the flower head does. Soft cream nappa with raw, unpainted edges.</p>
+            <dl class="specs">
+              <dt>Technique</dt><dd>Petal fold, hand-stitched</dd>
+              <dt>Leather</dt><dd>Cream nappa, 1.0 mm</dd>
+              <dt>Petals</dt><dd>About 60</dd>
+              <dt>Making time</dt><dd>About 45 hours</dd>
+            </dl>
+            <a class="ask" href="#commission" data-piece="The Hydrangea">Ask about this bag</a>
+          </article>
+
+          <article class="piece" data-i="1" data-accent="#8C7558" data-accent-dark="#C9B08A" style="--c: var(--accent)">
+            <img class="inline-img" src="assets/cotton.jpg" alt="Taupe star-knot leather bag hanging from a branch with cotton" loading="lazy">
+            <p class="eyebrow tag"><i></i>Paired with cotton</p>
+            <h3>The <em>Cotton Branch</em></h3>
+            <p class="desc">Folded leather strips are locked into five-point star knots, row after row, into a firm basket that keeps its shape empty or full. A rolled handle is wrapped by hand.</p>
+            <dl class="specs">
+              <dt>Technique</dt><dd>Star knot weave</dd>
+              <dt>Leather</dt><dd>Taupe calf, 1.2 mm</dd>
+              <dt>Knots</dt><dd>About 240</dd>
+              <dt>Making time</dt><dd>About 38 hours</dd>
+            </dl>
+            <a class="ask" href="#commission" data-piece="The Cotton Branch">Ask about this bag</a>
+          </article>
+
+          <article class="piece" data-i="2" data-accent="#5E7F35" data-accent-dark="#9CBD6A" style="--c: var(--accent)">
+            <img class="inline-img" src="assets/calla.jpg" alt="Slate knotted leather bag with calla lilies" loading="lazy">
+            <p class="eyebrow tag"><i></i>Paired with calla lily</p>
+            <h3>The <em>Calla</em></h3>
+            <p class="desc">Slate grey cord is tied in tight square knots, leaving small open windows across the body. The result is light, supple, and slumps softly when set down.</p>
+            <dl class="specs">
+              <dt>Technique</dt><dd>Square knot net</dd>
+              <dt>Leather</dt><dd>Slate cord, 4 mm wide</dd>
+              <dt>Cord used</dt><dd>About 70 metres</dd>
+              <dt>Making time</dt><dd>About 30 hours</dd>
+            </dl>
+            <a class="ask" href="#commission" data-piece="The Calla">Ask about this bag</a>
+          </article>
+
+          <article class="piece" data-i="3" data-accent="#7F8A3E" data-accent-dark="#B7C077" style="--c: var(--accent)">
+            <img class="inline-img" src="assets/fringe.jpg" alt="Fringe leather bag with braided knot beads and wild grass" loading="lazy">
+            <p class="eyebrow tag"><i></i>Paired with silver grass</p>
+            <h3>The <em>Silver Grass</em></h3>
+            <p class="desc">Long fringe falls from a row of braided leather beads, each one woven by hand around the rim. It moves like grass in wind as you walk.</p>
+            <dl class="specs">
+              <dt>Technique</dt><dd>Braided bead and fringe</dd>
+              <dt>Leather</dt><dd>Blush suede-backed nappa</dd>
+              <dt>Beads</dt><dd>32 braided knots</dd>
+              <dt>Making time</dt><dd>About 34 hours</dd>
+            </dl>
+            <a class="ask" href="#commission" data-piece="The Silver Grass">Ask about this bag</a>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="process" id="craft">
+    <div class="wrap">
+      <div class="process-head">
+        <p class="eyebrow">How a bag is made</p>
+        <h2>From one hide <em>to one bag</em></h2>
+        <p>There is no factory and no production line. Every step happens at the same bench, in the same hands.</p>
+      </div>
+      <div class="strand-wrap" aria-hidden="true">
+        <svg class="strand" id="strand" preserveAspectRatio="none"></svg>
+      </div>
+      <ol class="steps">
+        <li><span class="n">i.</span><h4>Choose the hide</h4><p>Full hides are chosen by hand for softness and an even grain, then matched to the plant the bag will be paired with.</p></li>
+        <li><span class="n">ii.</span><h4>Cut the strips</h4><p>The leather is cut into strips, cords or discs with a knife and ruler. A single bag can need seventy metres of strip.</p></li>
+        <li><span class="n">iii.</span><h4>Twist and knot</h4><p>Strip by strip, the body is twisted, folded and knotted into shape. This is the slow part, and the part no machine can do.</p></li>
+        <li><span class="n">iv.</span><h4>Finish by hand</h4><p>Handles are rolled and wrapped, edges burnished, and every knot checked before the bag is signed and wrapped.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="maker" id="maker">
+    <div class="wrap">
+      <div class="maker-img"><img src="assets/fringe.jpg" alt="Braided leather beads and fringe, knotted by hand" data-parallax="0.12" loading="lazy"></div>
+      <div class="maker-copy">
+        <p class="eyebrow">The maker</p>
+        <h2>One pair of <em>hands</em></h2>
+        <blockquote>“I want each bag to feel like it grew, not like it was manufactured.”</blockquote>
+        <p>Changying is a one-woman studio. She designs every bag, cuts every strip and ties every knot herself. That means fewer bags each year, and every one of them has been held, turned and finished by the person who imagined it.</p>
+        <p>Because each piece is made to order, colours, sizes and handles can be adjusted for you.</p>
+        <div class="figures">
+          <div><b>1</b><span>Maker</span></div>
+          <div><b data-count="40">40</b><span>Hours per bag, on average</span></div>
+          <div><b data-count="0">0</b><span>Machines in the knotting</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="commission" id="commission">
+    <div class="wrap">
+      <div class="commission-copy">
+        <p class="eyebrow">Commission</p>
+        <h2>Begin your <em>bag</em></h2>
+        <p>Tell her which piece you love, the colour you have in mind, and how you will carry it. She replies personally to every enquiry, usually within a few days.</p>
+        <p>Each commission takes four to eight weeks, depending on the technique.</p>
+      </div>
+      <form id="commissionForm" novalidate>
+        <div class="row">
+          <label for="f-name">Your name<input id="f-name" name="name" autocomplete="name" required></label>
+          <label for="f-email">Email<input id="f-email" name="email" type="email" autocomplete="email" required></label>
+        </div>
+        <label for="f-piece">The bag you have in mind
+          <select id="f-piece" name="piece">
+            <option>The Hydrangea</option>
+            <option>The Cotton Branch</option>
+            <option>The Calla</option>
+            <option>The Silver Grass</option>
+            <option>Something new</option>
+          </select>
+        </label>
+        <label for="f-msg">Colours, size, anything else<textarea id="f-msg" name="message" rows="4"></textarea></label>
+        <button class="btn" type="submit">Send enquiry</button>
+        <p class="form-note" id="formNote" role="status"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="logo" role="img" aria-label="Changying Pure Twist"></span>
+    <p>Handmade leather · One maker · Made to order</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const root = document.documentElement;
+  const isDark = () => root.dataset.theme === 'dark' ||
+    (root.dataset.theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+
+  /* header border on scroll */
+  const head = document.querySelector('.site-head');
+  const onScrollHead = () => head.classList.toggle('scrolled', scrollY > 8);
+
+  /* hero slideshow */
+  const heroImgs = [...document.querySelectorAll('#heroStage img')];
+  const dots = document.getElementById('heroDots');
+  let hi = 0, heroTimer;
+  heroImgs.forEach((img, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('role', 'tab');
+    b.setAttribute('aria-label', img.dataset.name);
+    b.addEventListener('click', () => { showHero(i); restart(); });
+    dots.appendChild(b);
+  });
+  function showHero(i) {
+    hi = i;
+    heroImgs.forEach((img, k) => img.classList.toggle('on', k === i));
+    [...dots.children].forEach((d, k) => { d.classList.toggle('on', k === i); d.setAttribute('aria-selected', k === i); });
+    document.getElementById('heroName').textContent = heroImgs[i].dataset.name;
+    document.getElementById('heroTech').textContent = heroImgs[i].dataset.tech;
+  }
+  function restart() {
+    clearInterval(heroTimer);
+    if (!reduce) heroTimer = setInterval(() => showHero((hi + 1) % heroImgs.length), 5200);
+  }
+  showHero(0); restart();
+
+  /* collection: sticky stage follows the piece in view, accent follows the plant */
+  const pieces = [...document.querySelectorAll('.piece')];
+  const stageImgs = [...document.querySelectorAll('#stage img')];
+  const count = document.getElementById('stageCount');
+  let active = 0;
+  function setActive(i) {
+    active = i;
+    pieces.forEach((p, k) => {
+      p.classList.toggle('on', k === i);
+      p.style.setProperty('--c', isDark() ? p.dataset.accentDark : p.dataset.accent);
+    });
+    stageImgs.forEach((img, k) => img.classList.toggle('on', k === i));
+    count.textContent = String(i + 1).padStart(2, '0') + ' / 04';
+    const p = pieces[i];
+    root.style.setProperty('--accent', isDark() ? p.dataset.accentDark : p.dataset.accent);
+  }
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) setActive(+e.target.dataset.i); });
+  }, { rootMargin: '-45% 0px -45% 0px' });
+  pieces.forEach(p => io.observe(p));
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => setActive(active));
+  new MutationObserver(() => setActive(active)).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+
+  /* "Ask about this bag" pre-selects the piece in the form */
+  document.querySelectorAll('.ask').forEach(a => a.addEventListener('click', () => {
+    document.getElementById('f-piece').value = a.dataset.piece;
+  }));
+
+  /* the twisted strand: two leather strips wound around each other, drawn by scroll */
+  const svg = document.getElementById('strand');
+  const NS = 'http://www.w3.org/2000/svg';
+  let paths = [];
+  function buildStrand() {
+    const w = svg.clientWidth || 1000, h = svg.clientHeight || 120;
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.innerHTML = '';
+    const turns = Math.max(3, Math.round(w / 170));
+    const amp = h * 0.36, mid = h / 2, steps = 220;
+    const make = (phase, width, color) => {
+      let d = '';
+      for (let s = 0; s <= steps; s++) {
+        const x = (s / steps) * w;
+        const y = mid + Math.sin((s / steps) * turns * Math.PI * 2 + phase) * amp;
+        d += (s ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+      }
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', d); p.setAttribute('stroke', color); p.setAttribute('stroke-width', width);
+      svg.appendChild(p);
+      const len = p.getTotalLength();
+      p.style.strokeDasharray = len; p.style.strokeDashoffset = reduce ? 0 : len;
+      p._len = len;
+      return p;
+    };
+    paths = [make(0, 7, 'var(--leather)'), make(Math.PI, 3, 'var(--ink)')];
+    drawStrand();
+  }
+  function drawStrand() {
+    if (reduce || !paths.length) return;
+    const r = svg.getBoundingClientRect();
+    const t = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight * 0.75)));
+    paths.forEach(p => p.style.strokeDashoffset = p._len * (1 - t));
+  }
+
+  /* gentle parallax on the maker photo */
+  const par = [...document.querySelectorAll('[data-parallax]')];
+  function parallax() {
+    if (reduce) return;
+    par.forEach(el => {
+      const r = el.parentElement.getBoundingClientRect();
+      const c = (r.top + r.height / 2 - innerHeight / 2);
+      el.style.transform = `translateY(${Math.max(-r.height * 0.16, Math.min(0, -c * +el.dataset.parallax - r.height * 0.08))}px)`;
+    });
+  }
+
+  let ticking = false;
+  addEventListener('scroll', () => {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(() => { onScrollHead(); drawStrand(); parallax(); ticking = false; });
+  }, { passive: true });
+  addEventListener('resize', buildStrand);
+  buildStrand(); onScrollHead(); parallax();
+
+  /* commission form (demo: nothing is sent) */
+  const form = document.getElementById('commissionForm');
+  const note = document.getElementById('formNote');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = form.elements.name.value.trim();
+    const email = form.elements.email.value.trim();
+    if (!name) { note.textContent = 'Please add your name so she knows who to reply to.'; form.elements.name.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { note.textContent = 'Please check your email address, it looks incomplete.'; form.elements.email.focus(); return; }
+    note.textContent = `Thank you, ${name}. This is a demo, so nothing was sent. On the live site, your enquiry about ${form.elements.piece.value} would go straight to the studio.`;
+    form.reset();
+  });
+})();
+</script>
+</body>
+</html>
